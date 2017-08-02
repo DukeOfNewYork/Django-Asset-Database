@@ -1,0 +1,46 @@
+{% extends "DjangoAssetManagement/block.html" %}
+{% block title %} {{ page_name }} {% endblock  %}
+
+
+{% block header %}
+  <h1 class="w3-margin w3-jumbo">
+	Building {{ building }}
+</h1>
+  <p class="w3-xlarge">Number Of Moves {{ num_of_assets }}</p>
+  <button class="w3-button w3-black w3-padding-large w3-large w3-margin-top">Get Started</button>
+{% endblock  %}
+
+<!-- First Grid -->
+{% block firstgrid %} 
+    <div class="w3-twothird">
+      <h1>Tag-Room-Date</h1>
+      <h5 class="w3-padding-32">
+
+      </h5>
+
+      <p class="w3-text-grey">
+	<table style="width:100%">
+	     <tr>
+		<thead>
+		<th>Asset Name</th>
+		<th>Asset Room</th>
+		<th>Asset Update Date</th>
+		</thead>
+	     </tr>
+	     <tbody> 
+	{% for asset in assets %}
+	  
+	     <tr>
+		<th>{{ asset.name }}	</th>
+		<th>{{ asset.room }}	</th>
+		<th>{{ asset.pub_date }}</th>
+	     </tr>
+	  
+	{% endfor %}
+	</tbody> 
+	</table>
+
+      </p>
+    </div>
+{% endblock  %}
+

@@ -1,0 +1,19 @@
+<html>     
+    <head>         
+    <title>Assets Search</title>     
+    </head>     
+    <body>       
+        <p>You searched for: <strong>{{ query }}</strong></p>
+   
+        {% if assets %}           
+            <p>Found {{ assets|length }} asset{{ assets|pluralize }}.</p>
+            <ul>               
+                {% for asset in assets %}               
+                <li>{{ asset.name }}</li>               
+                {% endfor %}           
+            </ul>       
+        {% else %}           
+            <p>No assets matched your search criteria.</p>       
+        {% endif %}     
+    </body>
+</html>

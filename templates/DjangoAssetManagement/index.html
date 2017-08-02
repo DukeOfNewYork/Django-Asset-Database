@@ -1,0 +1,26 @@
+{% extends "DjangoAssetManagement/block.html" %}
+{% block title %} {{ page_name }} {% endblock  %}
+
+<!-- Header -->
+
+{% block header %}
+  <h1 class="w3-margin w3-jumbo">
+<form enctype="multipart/form-data" action="add_assets/" method="post">
+ {% csrf_token %}
+ {{ form.as_p }}
+ <input type="submit" value="Submit" />
+ </form>
+</h1>
+  <p class="w3-xlarge">{{ page_name }}</p>
+{% endblock  %}
+
+<!-- First Grid -->
+{% block firstgrid %} 
+    <div class="w3-twothird">
+      <h1>Buildings</h1>
+      <h5 class="w3-padding-32">
+	{% for location in locations %}
+	<p><a href="/building/{{ location }}">{{ location }} </a></p>
+	{% endfor %}
+	</h5>
+{% endblock  %}
