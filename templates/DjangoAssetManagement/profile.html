@@ -2,23 +2,14 @@
 {% block title %} {{ page_name }} {% endblock  %}
 
 <!-- Header -->
+
 {% block header %}
-  <h1 class="w3-margin w3-jumbo">
-	Number Of Room Changes {{ numLocations }}
-</h1>
-  <p class="w3-xlarge">Number Of Moves {{ moves }}</p>
+    <h1 class="w3-margin">
+    </h1>
 {% endblock  %}
 
-<!-- First Grid -->
-{% block firstgrid %} 
-    <div class="w3-twothird">
-        <h5 class="w3-padding-32">
-            {% for location in locations %}
-                <p >{{ location }} </p>
-            {% endfor %}
-        </h5>
-        <p class="w3-text-grey">
-        <table style="width:100%">
+{% block firstgrid %}
+    <table style="width:100%">
         <tr>
             <th>Asset Building</th>
             <th>Asset Name</th>
@@ -34,6 +25,4 @@
             </tr>
         {% endfor %}
     </table>
-    </div>
 {% endblock  %}
-

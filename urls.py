@@ -10,9 +10,14 @@ urlpatterns = [
     url(r'^all_weeks/$', views.all_weeks, name='all_weeks'),
     url(r'^all_weeks/([-\w]+)/$', views.week_of_list, name='week_of_list'),
     url(r'^export_week/([-\w]+)/$', views.export_week, name='export_weeks'),
-    url(r'^search-form/$', views.search_form),
     url(r'^export/$', views.export_moves, name='export'),
+    url(r'^image_upload/$', views.image_upload, name='upload'),
+    url(r'^image_scan/$', views.image_scan, name='scan'),
     url(r'^add_assets/$', views.add_assets, name='add_assets'),
+    url(r'^add_image/$', views.add_image, name='add_image'),
+    url(r'^user/(\w+)/$', views.profile, name='profile'),
+    url(r'^login/$', views.login_view, name='login'),
+    url(r'^logout/$', views.logout_view, name='logout'),
 ]
 
 urlpatterns += [url(r'^media/(?P<path>.*)$', serve,

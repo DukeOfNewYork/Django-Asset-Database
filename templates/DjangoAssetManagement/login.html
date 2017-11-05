@@ -1,0 +1,15 @@
+{% extends "DjangoAssetManagement/block.html" %}
+{% block title %} {{ page_name }} {% endblock  %}
+
+<!-- Header -->
+
+{% block header %}
+<h1 class="w3-margin">
+ <form action="." method="post" >
+ {% csrf_token %}
+ {{ form.as_p }}
+ <input type="submit" value="Submit"/>
+ </form>
+</h1>
+  <p class="w3-xlarge">{{ name }}</p>
+{% endblock  %}

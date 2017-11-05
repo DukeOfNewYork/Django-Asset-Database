@@ -4,14 +4,13 @@
 <!-- Header -->
 
 {% block header %}
-  <h1 class="w3-margin w3-jumbo">
-<form enctype="multipart/form-data" action="add_assets/" method="post">
+<h1>
+ <form id="form" enctype="multipart/form-data" action="add_assets/" method="post" >
  {% csrf_token %}
  {{ form.as_p }}
- <input type="submit" value="Submit" />
+ <input type="submit" value="Submit" Class="fileUpload"/>
  </form>
 </h1>
-  <p class="w3-xlarge">{{ page_name }}</p>
 {% endblock  %}
 
 <!-- First Grid -->
