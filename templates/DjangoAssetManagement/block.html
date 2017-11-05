@@ -41,13 +41,6 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
         <a href="/all_weeks" class="bar-item button hide-small padding-large hover-white">All Weeks</a>
         <a href="/search-form" class="bar-item button hide-small padding-large hover-white">search</a>
         <a href="/export" class="bar-item button hide-small padding-large hover-white">Export</a>
-       <!-- {% if user.is_authenticated %}
-            <a href="{% url 'profile' user.username %}" class="bar-item button hide-small hover-white">{{ user.username }}</a>
-            <a href ="/Logout" class="bar-item button hide-small hover-white">Logout</a>
-        {% else %}
-            <a href ="/login" class="bar-item button hide-small padding-large hover-white">Login</a>
-        {% endif %}
-        -->
     </div>
     <div id="navDemo" class="bar-block white hide large">
         <a href="/" class="bar-item button hide-medium hide-large padding-large hover-white">Asset Form</a>
@@ -58,7 +51,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
         <a href="/" class="bar-item button hide-medium hide-large padding-large hover-white">Asset Form</a>
         {% if user.is_authenticated %}
         <a href="{% url 'profile' user.username %}" class="bar-item button padding-large">{{ user.username }}</a>
-        <a href ="/Logout" class="bar-item button padding-large">Logout</a>
+        <a href ="/logout" class="bar-item button padding-large">Logout</a>
         {% else %}
         <a href ="/login" class="bar-item button padding-large">Login</a>
         {% endif %}
@@ -80,20 +73,5 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
   </div>
 </div>
 
-<script>
-// Used to toggle the menu on small screens when clicking on the menu button
-<!--
-function myFunction() {
-var x = document.getElementById("navDemo");
-    if (x.className.indexOf("show") == -1) {
-        x.className += " show";
-        console.log(x.className);
-    } else {
-        x.className = x.className.replace(" show", "");
-        console.log(x.className);
-    }
-}
--->
-</script>
 </body>
 </html>
