@@ -119,6 +119,7 @@ def export_week(request, select_week):
         writer.writerow([x.name, x.room, ("{:%Y-%m-%d %H:%M}".format(x.pub_date))])
     return response
 
+
 def export_moves(request):
     last_loc = ""
     last_room = ""
