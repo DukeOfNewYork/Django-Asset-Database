@@ -5,8 +5,8 @@ from .models import Building
 
 
 class AssetForm(forms.ModelForm):
-    def __str__(self):
-        return self.asset_name
+    # def __str__(self):
+    #     return self.asset_name
 
     class Meta:
         model = models.Asset

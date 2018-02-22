@@ -1,4 +1,3 @@
-# from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
@@ -8,11 +7,6 @@ from .models import Asset, Building, WeekOf
 from datetime import datetime as dt
 from datetime import timedelta as td
 import csv
-
-
-# Create your views here.
-# listo = []
-
 
 def index(request):
     buildings = Building.objects.all()
