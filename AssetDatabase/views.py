@@ -1,23 +1,23 @@
-# from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from .forms import AssetForm, LoginForm
 from .models import Asset, Building, WeekOf
 from datetime import datetime as dt
 from datetime import timedelta as td
-import csv
+from .view_functions import format_csv
 
 
 # Create your views here.
-# listo = []
 
 
 def index(request):
-    buildings = Building.objects.all()
-    listo = []
     name = 'Asset Manager'
+    buildings = Building.objects.all()
+    locations = []
+    for i in buildings:
+        locations.append(i)
     if 'r' in request.GET and request.GET['r'] and 'l' in request.GET and request.GET['l']:
         room = request.GET['r']
         location = request.GET['l']
@@ -27,135 +27,121 @@ def index(request):
         form = AssetForm(initial={'name': name})
     else:
         form = AssetForm()
-    for i in buildings:
-        listo.append(i)
-    return render(request, 'DjangoAssetManagement/index.html', {'name': name, 'form': form, 'locations': listo})
+    return render(request, 'DjangoAssetManagement/index.html', {'name': name, 'form': form, 'locations': locations})
 
 
-def building_list(request, buildingI):
-    buildings = Building.objects.all()
+def building_list(request, building_query):
+    """
+    Takes any string from the browser and searches for the building with that name.
+    :param building_query: the URL past /building/ does not parse spaces.
+    :return: All assets within the building.
+    """
+    name = building_query
     try:
-        buildings = Building.objects.get(name=buildingI)
+        buildings = Building.objects.get(name=building_query)
     except Building.DoesNotExist:
         return render(request, 'DjangoAssetManagement/building_list.html',
                       {'name': 'No Building Found', 'building': 'No Building Found', 'assets': [],
                        'num_of_assets': '0'})
-    name = buildingI
-    listo = []
-    for f in buildings.Asset.all():
-        listo.append(f)
-    listo.sort(key=lambda x: (x.room, x.pub_date), reverse=True)
-    num_of_assets = len(listo)
+    assets = []
+    for a in buildings.Asset.all():
+        assets.append(a)
+    assets.sort(key=lambda x: (x.room, x.pub_date), reverse=True)
     return render(request, 'DjangoAssetManagement/building_list.html',
-                  {'name': name, 'building': name, 'assets': listo, 'num_of_assets': num_of_assets})
+                  {'name': name, 'building': name, 'assets': assets, 'number_of_assets': len(assets)})
 
 
 def all_assets(request):
+    """
+    Displays a list of all assets with their buildings, rooms, and weeks.
+    """
     name = "List of All Assets"
     asset_list = []
     assets = Asset.objects.all()
     for f in assets:
         asset_list.append(f)
-        asset_list.sort(key=lambda x: (x.location.name, x.room, x.pub_date), reverse=True)
-    moves = len(assets)
-    return render(request, 'DjangoAssetManagement/all-assets.html', {'name': name, 'assets': asset_list, 'moves': moves})
+    asset_list.sort(key=lambda x: (x.location.name, x.room, x.pub_date), reverse=True)
+    return render(request, 'DjangoAssetManagement/all-assets.html', {'name': name, 'assets': asset_list,
+                                                                     'number_of_assets': len(assets)})
 
 
 def all_weeks(request):
+    """
+    A list of weeks in order from newest to oldest
+    """
     name = "All Weeks"
     week_list = []
     for f in WeekOf.objects.all():
         week_list.append(f)
-    num_weeks = len(week_list)
-    return render(request, 'DjangoAssetManagement/all_weeks.html', {'name': name, 'num_weeks': num_weeks, 'week_list': week_list})
+    week_list.sort(key=lambda x: x.name, reverse=True)
+    return render(request, 'DjangoAssetManagement/all_weeks.html',
+                  {'name': name, 'num_weeks': len(week_list), 'week_list': week_list})
 
 
 def week_of_list(request, select_week):
+    """
+    Takes any string from the browser and searches for the weeks with that name.
+    :param select_week: the URL past /all_weeks/ does not parse spaces.
+    :return: All assets of the week
+    """
+    name = "Week Of " + select_week
+    assets = []
     try:
-        weekobj = WeekOf.objects.get(name=select_week)
+        week = WeekOf.objects.get(name=select_week)
     except WeekOf.DoesNotExist:
         return render(request, 'DjangoAssetManagement/week_of_list.html',
                       {'name': "No Date Found", "select_week": "No Date Found", 'assets': "", 'buildings': "",
                        'moves': ""})
-    name = "Week Of " + select_week
-    lastRoom = 0
-    aList = []
-    for f in weekobj.Asset.all():
-        aList.append(f)
-    aList.sort(key=lambda x: (x.location.name, x.room, x.pub_date), reverse=True)
-    moves = len(aList)
+    for f in week.Asset.all():
+        assets.append(f)
+        assets.sort(key=lambda x: (x.location.name, x.room, x.pub_date), reverse=True)
     return render(request, 'DjangoAssetManagement/week_of_list.html',
-                  {'name': name, "select_week": select_week, 'select_week': select_week, 'assets': aList,
-                   'moves': moves})
+                  {'name': name, "select_week": select_week, 'select_week': select_week, 'assets': assets,
+                   'number_of_assets': len(assets)})
 
 
 def export_week(request, select_week):
-    lastLoc = ""
-    lastRoom = ""
+    """
+    Creates a CSV document from the assets of the selected week
+    :param select_week: the URL parameter, does not parse spaces.
+    :return: A CSV
+    """
     try:
-        weekobj = WeekOf.objects.get(name=select_week)
+        selected_week = WeekOf.objects.get(name=select_week)
     except WeekOf.DoesNotExist:
         return render(request, 'DjangoAssetManagement/week_of_list.html',
                       {'name': "No Date Found", "select_week": "No Date Found", 'assets': "", 'buildings': "",
                        'moves': ""})
-    listo = []
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
-    writer = csv.writer(response)
-    for asset in weekobj.Asset.all():
-        listo.append(asset)
-    listo.sort(key=lambda x: (x.location.name, x.room, x.pub_date), reverse=True)
-    writer.writerow(["Week of " + select_week])
-    for x in listo:
-        if lastLoc != x.location:
-            lastLoc = x.location
-            writer.writerow([""])
-            writer.writerow([""])
-            writer.writerow([x.location])
-            writer.writerow([""])
-        elif lastRoom != x.room:
-            lastRoom = x.room
-            writer.writerow([""])
-        writer.writerow([x.name, x.room, ("{:%Y-%m-%d %H:%M}".format(x.pub_date))])
-    return response
+    week_assets = []
+    for asset in selected_week.Asset.all():
+        week_assets.append(asset)
+    week_assets.sort(key=lambda x: (x.location.name, x.room, x.pub_date), reverse=True)
+    return format_csv(week_assets, select_week)
 
 
 def export_moves(request):
-    last_loc = ""
-    last_room = ""
-    listo = []
-    assets = Asset.objects.all()
-    buildings = Building.objects.all()
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
-    writer = csv.writer(response)
-    for asset in assets:
-        listo.append(asset)
-    listo.sort(key=lambda x: (x.location.name, x.room), reverse=True)
-    writer.writerow(["All stored Assets"])
-    for x in listo:
-        if last_loc != x.location:
-            last_loc = x.location
-            writer.writerow([""])
-            writer.writerow([""])
-            writer.writerow([x.location])
-            writer.writerow([""])
-        elif last_room != x.room:
-            last_room = x.room
-            writer.writerow([""])
-        writer.writerow([x.name, x.room, ("{:%Y-%m-%d %H:%M}".format(x.pub_date))])
-    return response
+    """
+    Creates a CSV document from the entire database.
+    :return: A CSV
+    """
+    assets = []
+    assets_object = Asset.objects.all()
+    for asset in assets_object:
+        assets.append(asset)
+    return format_csv(assets, 'all_assets_exported')
 
 
 def add_assets(request):
-    assets = Asset.objects.all()
-    weeks = WeekOf.objects.all()
-    thisweek = (dt.today() - td(days=dt.today().isoweekday() % 7)).strftime('%Y-%m-%d')
+    """
+    Takes the input form, attaches it to a week object, and saves it to the database.
+    """
+    # Generates the week, then the try except checks to see if it needs to create a new week object.
+    this_week = (dt.today() - td(days=dt.today().isoweekday() % 7)).strftime('%Y-%m-%d')
     form = AssetForm(request.POST, request.FILES)
     try:
-        weekobj = WeekOf.objects.get(name=thisweek)
+        weekobj = WeekOf.objects.get(name=this_week)
     except WeekOf.DoesNotExist:
-        weekobj = WeekOf(name=thisweek)
+        weekobj = WeekOf(name=this_week)
         weekobj.save()
     if request.method == 'POST':
         if form.is_valid():
