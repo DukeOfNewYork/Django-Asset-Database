@@ -1,15 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
-# from django.forms import ModelForm
-# from django import forms
-
-
-# Create your models here.
-# pub_date = models.DateTimeField('date published')
-
-
 class Building(models.Model):
     name = models.CharField(max_length=100)
 
@@ -36,8 +27,3 @@ class Asset(models.Model):
 
     def __str__(self):
         return self.name + " " + self.location.name
-
-# class AssetForm(ModelForm):
-#    class Meta:
-#        model = Asset
-#        fields = ['asset_name', 'asset_location','asset_room']
