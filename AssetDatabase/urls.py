@@ -22,9 +22,6 @@ urlpatterns = [
     url(r'^add_building/$', views.add_building, name='add_building'),
     url(r'^remove_building/$', views.remove_building, name='remove_building'),
     url(r'^upload/csv/$', views.upload_csv, name='upload_csv'),
-    url(r'^user/(\w+)/$', views.profile, name='profile'),
-    url(r'^login/$', views.login_view, name='login'),
-    url(r'^logout/$', views.logout_view, name='logout'),
 ]
 
 urlpatterns += [url(r'^media/(?P<path>.*)$', serve,

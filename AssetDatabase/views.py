@@ -1,9 +1,6 @@
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.urls import reverse
-from .forms import AssetForm, LoginForm, AdministrationForm
+from .forms import AssetForm, AdministrationForm
 from .models import Asset, Building, WeekOf
 from datetime import datetime as dt
 from datetime import timedelta as td
@@ -264,28 +261,4 @@ def upload_csv(request):
     return administration(request)
 
 
-def profile(request, username):
-    user = User.objects.get(username=username)
-    assets = Asset.objects.get(user=user)
-    return render(request, 'DjangoAssetManagement/profile.html', {'name': username, 'assets': assets})
 
-
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            u = form.cleaned_data['username']
-            p = form.cleaned_data['password']
-            user = authenticate(username=u, password=p)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponseRedirect('/')
-    else:
-        form = LoginForm()
-        return render(request, 'DjangoAssetManagement/login.html', {'form': form})
-
-
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect('/')
