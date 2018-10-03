@@ -10,7 +10,15 @@ class AssetForm(forms.ModelForm):
 
     class Meta:
         model = models.Asset
-        fields = ('location', 'name', 'room', 'image', 'optional_field')
+        fields = ('location', 'name', 'room', 'image', 'optional_field',)
+        
+class AdministrationForm(forms.ModelForm):
+    def __str__(self):
+        return self.building_name
+    
+    class Meta:
+        model = Building
+        fields = '__all__'
 
 
 class LoginForm(forms.Form):
